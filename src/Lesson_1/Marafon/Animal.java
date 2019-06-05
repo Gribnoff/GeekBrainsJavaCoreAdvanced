@@ -15,6 +15,11 @@ public class Animal implements Competitor {
         return onDistance;
     }
 
+    @Override
+    public void setOnDistance() {
+        onDistance = true;
+    }
+
     public Animal(String type, String name, int maxRunDistance, int maxJumpHeight, int maxSwimDistance) {
         this.type = type;
         this.name = name;
@@ -27,9 +32,9 @@ public class Animal implements Competitor {
     @Override
     public void run(int dist) {
         if (dist <= maxRunDistance) {
-            System.out.println(type + " " + name + " хорошо справился с кроссом");
+            System.out.println(this.toString() + " хорошо справился с кроссом");
         } else {
-            System.out.println(type + " " + name + " не справился с кроссом");
+            System.out.println(this.toString() + " не справился с кроссом");
             onDistance = false;
         }
     }
@@ -37,9 +42,9 @@ public class Animal implements Competitor {
     @Override
     public void jump(int height) {
         if (height <= maxJumpHeight) {
-            System.out.println(type + " " + name + " удачно перепрыгнул через стену");
+            System.out.println(this.toString() + " удачно перепрыгнул через стену");
         } else {
-            System.out.println(type + " " + name + " не смог перепрыгнуть стену");
+            System.out.println(this.toString() + " не смог перепрыгнуть стену");
             onDistance = false;
         }
     }
@@ -47,20 +52,25 @@ public class Animal implements Competitor {
     @Override
     public void swim(int dist) {
         if (maxSwimDistance == 0) {
-            System.out.println(type + " " + name + " не умеет плавать");
+            System.out.println(this.toString() + " не умеет плавать");
             onDistance = false;
             return;
         }
         if (dist <= maxSwimDistance) {
-            System.out.println(type + " " + name + " отлично проплыл");
+            System.out.println(this.toString() + " отлично проплыл");
         } else {
-            System.out.println(type + " " + name + " не смог проплыть");
+            System.out.println(this.toString() + " не смог проплыть");
             onDistance = false;
         }
     }
 
     @Override
     public void info() {
-        System.out.println(type + " " + name + " - " + onDistance);
+        System.out.println(this.toString() + " - " + onDistance);
+    }
+
+    @Override
+    public String toString() {
+        return type + " " + name;
     }
 }

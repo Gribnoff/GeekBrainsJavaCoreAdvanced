@@ -5,5 +5,6 @@ public interface Competitor {
     void swim(int dist);
     void jump(int height);
     boolean isOnDistance();
+    void setOnDistance();
     void info();
 }

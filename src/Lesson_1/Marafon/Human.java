@@ -1,6 +1,8 @@
 package Lesson_1.Marafon;
 
 public class Human implements Competitor {
+    static int count = 0;
+    static String[] names = {"Абрам", "Аваз", "Августин", "Авраам", "Агап", "Агапит", "Агафон", "Адам", "Адриан", "Азамат"};
     String name;
 
     int maxRunDistance;
@@ -14,12 +16,18 @@ public class Human implements Competitor {
         return active;
     }
 
+    @Override
+    public void setOnDistance() {
+        active = true;
+    }
+
     public Human(String name) {
         this.name = name;
         this.maxRunDistance = 5000;
         this.maxJumpHeight = 30;
         this.maxSwimDistance = 200;
         this.active = true;
+        count++;
     }
 
     @Override
@@ -55,5 +63,10 @@ public class Human implements Competitor {
     @Override
     public void info() {
         System.out.println(name + " - " + active);
+    }
+
+    @Override
+    public String toString() {
+        return name;
     }
 }
