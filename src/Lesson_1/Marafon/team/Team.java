@@ -1,12 +1,14 @@
-package Lesson_1.Marafon;
+package Lesson_1.Marafon.team;
+
+import Lesson_1.Marafon.course.Course;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class Team {
-    String name;
-    Competitor[] members;
-    Map<Course, boolean[][]> resultTable = new HashMap<>();
+    private String name;
+    public Competitor[] members;
+    public Map<Course, boolean[][]> resultTable = new HashMap<>();
 
     public Team(String name, Competitor... members) {
         this.name = name;
@@ -34,12 +36,12 @@ public class Team {
         }
     }
 
-    void startCourse(Course course) {
+    public void startCourse(Course course) {
         course.doIt(this);
     }
 
-    void showWhoPassed(Course course) {
-        System.out.println("\nУчастники, прошедшие полосу " + course.name + " полностью:");
+    public void showWhoPassed(Course course) {
+        System.out.println("\nУчастники из " + name + ", прошедшие полосу " + course.name + " полностью:");
         boolean somebodyPassed = false;
         for (int i = 0; i < members.length; i++) {
             if (resultTable.get(course)[i][course.obstacles.length - 1]) {
@@ -49,28 +51,28 @@ public class Team {
         }
 
         if (!somebodyPassed)
-            System.out.println("Оказалось, что никто не прошёл полосу эту до конца!");
+            System.out.println("Оказалось, что из команды " + name + " никто не прошёл полосу эту до конца!");
     }
 
-    void showResults(Course course) {
-        System.out.println("\nИтоги проведения соревнований " + course.name + "\n");
+    public void showResults(Course course) {
+        System.out.println("\nРезультаты участников из " + name + " на соревнованиях " + course.name + "\n");
         for (int i = 0; i < members.length; i++) {
-            String result = "";
+            StringBuilder result = new StringBuilder();
 
             if (resultTable.get(course)[i][course.obstacles.length - 1]){
-                result += " справился со всеми испытаниями!";
+                result.append(" справился со всеми испытаниями!");
             } else {
                 if (!resultTable.get(course)[i][0])
-                    result += " не завершил ни одного испытания!";
+                    result.append(" не завершил ни одного испытания!");
                 else {
-                    result += " справился со следующими испытаниями: ";
+                    result.append(" справился со следующими испытаниями: ");
                     for (int j = 0; j < course.obstacles.length; j++) {
                         if (!resultTable.get(course)[i][j])
                             break;
                         else
-                            result += course.obstacles[j].toString() + ", ";
+                            result.append(course.obstacles[j].toString() + ", ");
                     }
-                    result += "а потом сошёл с дистанции";
+                    result.append("а потом сошёл с дистанции");
                 }
             }
             System.out.println(members[i].toString() + result);

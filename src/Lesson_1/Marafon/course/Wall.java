@@ -1,9 +1,11 @@
-package Lesson_1.Marafon;
+package Lesson_1.Marafon.course;
+
+import Lesson_1.Marafon.team.Competitor;
 
 public class Wall extends Obstacle {
-    int height;
+    private int height;
 
-    public Wall(int height) {
+    Wall(int height) {
         this.height = height;
     }
 

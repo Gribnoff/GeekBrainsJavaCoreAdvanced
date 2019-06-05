@@ -1,8 +1,10 @@
-package Lesson_1.Marafon;
+package Lesson_1.Marafon.course;
+
+import Lesson_1.Marafon.team.Team;
 
 public class Course {
-    String name;
-    Obstacle[] obstacles;
+    public String name;
+    public Obstacle[] obstacles;
 
     public Course(String name, Obstacle... obstacles) {
         this.name = name;

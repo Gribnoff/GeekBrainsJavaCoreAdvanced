@@ -1,9 +1,11 @@
-package Lesson_1.Marafon;
+package Lesson_1.Marafon.course;
+
+import Lesson_1.Marafon.team.Competitor;
 
 public class Cross extends Obstacle {
-    int length;
+    private int length;
 
-    public Cross(int length) {
+    Cross(int length) {
         this.length = length;
     }
 
