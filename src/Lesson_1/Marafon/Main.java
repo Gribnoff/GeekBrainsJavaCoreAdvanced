@@ -2,16 +2,11 @@ package Lesson_1.Marafon;
 
 public class Main {
     public static void main(String[] args) {
-        Competitor[] competitors = {new Human("Боб"), new Cat("Барсик"), new Dog("Бобик")};
-        Obstacle[] course = {new Cross(80), new Wall(2), new Wall(1), new Cross(120)};
-        for (Competitor c : competitors) {
-            for (Obstacle o : course) {
-                o.doIt(c);
-                if (!c.isOnDistance()) break;
-            }
-        }
-        for (Competitor c : competitors) {
-            c.info();
-        }
+        Team teamA = new Team("Команда А", 5);
+        Course adrenalin = new Course("Adrenalin Games", 5);
+
+        teamA.startCourse(adrenalin);
+        teamA.showResults(adrenalin);
+        teamA.showWhoPassed(adrenalin);
     }
 }
