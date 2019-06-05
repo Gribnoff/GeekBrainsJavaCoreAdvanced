@@ -41,6 +41,11 @@ public class Team {
     }
 
     public void showWhoPassed(Course course) {
+        if (resultTable.get(course) == null) {
+            System.out.println("Команда " + name + " на соревнованиях " + course.name + " ещё не выступала");
+            return;
+        }
+
         System.out.println("\nУчастники из " + name + ", прошедшие полосу " + course.name + " полностью:");
         boolean somebodyPassed = false;
         for (int i = 0; i < members.length; i++) {
@@ -55,6 +60,11 @@ public class Team {
     }
 
     public void showResults(Course course) {
+        if (resultTable.get(course) == null) {
+            System.out.println("Команда " + name + " на соревнованиях " + course.name + " ещё не выступала");
+            return;
+        }
+
         System.out.println("\nРезультаты участников из " + name + " на соревнованиях " + course.name + "\n");
         for (int i = 0; i < members.length; i++) {
             StringBuilder result = new StringBuilder();
