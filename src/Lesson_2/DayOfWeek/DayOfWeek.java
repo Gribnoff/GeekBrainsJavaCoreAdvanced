@@ -1,6 +1,6 @@
 package Lesson_2.DayOfWeek;
 
-public enum DayOfWeek {
+enum DayOfWeek {
     MONDAY("Понедельник", 40),
     TUESDAY("Вторник", 32),
     WEDNESDAY("Среда", 24),
