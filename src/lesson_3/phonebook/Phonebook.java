@@ -14,11 +14,7 @@ class Phonebook {
     }
 
     void add(String surname, String phone) {
-        Set<String> phoneList;
-        if (!book.containsKey(surname))
-            phoneList = new HashSet<>();
-        else
-            phoneList = book.get(surname);
+        Set<String> phoneList = book.getOrDefault(surname, new HashSet<>());
         phoneList.add(phone);
         book.put(surname, phoneList);
     }
