@@ -1,0 +1,48 @@
+/*Sea color scheme*/
+#menubar {
+    -fx-background-color: #307fb0;
+}
+
+.menu .label{
+    -fx-text-fill : #ffffff;
+}
+
+.menu-item .label {
+    -fx-text-fill : #000000;
+}
+
+#textArea .content {
+    -fx-background-image: url("../img/sea-back.jpg") repeat-y center top;
+}
+
+#textArea{
+     -fx-background-color: #1d0e15;
+    -fx-text-fill: #ffffff;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+}
+
+.button {
+    -fx-background-color:
+        #000000,
+        linear-gradient(#7ebcea, #2f4b8f),
+        linear-gradient(#426ab7, #263e75),
+        linear-gradient(#395cab, #223768);
+    -fx-background-insets: 0,1,2,3;
+    -fx-background-radius: 3,2,2,2;
+    -fx-text-fill: white;
+    -fx-font-size: 12px;
+}
+.button Text {
+    -fx-effect: dropshadow( one-pass-box , rgba(0,0,0,0.8) , 0, 0.0 , 0 , 1);
+}
+
+.button:hover {
+    -fx-background-color: #013e5b;
+    -fx-text-fill: #000000;
+}
+
+#textField {
+    -fx-background-color: #1c938f;
+    -fx-text-fill: #000000;
+}
