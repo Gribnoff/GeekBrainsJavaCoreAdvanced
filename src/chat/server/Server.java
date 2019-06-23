@@ -16,10 +16,10 @@ class Server {
             server = new ServerSocket(8189);
             System.out.println("Сервер запущен");
 
-            while (true) {
+            while (!server.isClosed()) {
                 socket = server.accept();
-                System.out.println("Клиент подключился");
-                clients.add(new ClientHandler(socket, this));
+                System.out.println("user #" + ClientHandler.online + " подключился");
+                subsribe(new ClientHandler(socket, this, "user #" + ClientHandler.online));
             }
 
 
@@ -37,7 +37,16 @@ class Server {
 
     void broadcastMessage(String text) {
         for (ClientHandler client : clients) {
-            client.sendMessage(text);
+            if (!client.getSocket().isClosed())
+                client.sendMessage(text);
         }
+    }
+
+    void subsribe(ClientHandler client) {
+        clients.add(client);
+    }
+
+    void unsubsribe(ClientHandler client) {
+        clients.remove(client);
     }
 }

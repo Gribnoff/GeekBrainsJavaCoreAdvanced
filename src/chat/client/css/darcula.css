@@ -13,7 +13,6 @@
 
 #textArea .content {
     -fx-background-image: url("../img/darcula-back.jpg") repeat-y center top;
-    -fx-background-repeat:no-repeat;
 }
 
 #textArea{
