@@ -9,8 +9,8 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
-
 <?import javafx.scene.control.SeparatorMenuItem?>
+
 <VBox fx:id="window" alignment="center" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="chat.client.sample.Controller">
     <stylesheets><URL value="@/chat/client/css/darcula.css"/></stylesheets>
     <MenuBar fx:id="menubar">

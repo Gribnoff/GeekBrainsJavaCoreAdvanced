@@ -2,10 +2,7 @@ package chat.client.sample;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 
 import java.io.DataInputStream;
@@ -13,6 +10,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.URL;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -49,12 +47,16 @@ public class Controller implements Initializable {
                     try {
                         while (true) {
                             String str = in.readUTF();
+                            if ("/disconnectionAccepted".equals(str))
+                                break;
                             textArea.appendText(str + "\n");
                         }
                     } catch (IOException e) {
                         e.printStackTrace();
                     } finally {
                         try {
+                            out.close();
+                            in.close();
                             socket.close();
                         } catch (IOException e) {
                             e.printStackTrace();
@@ -71,12 +73,24 @@ public class Controller implements Initializable {
     public void sendMessage() {
         if (!textField.getText().isEmpty() && textField.getText() != null) {
             try {
-                out.writeUTF(textField.getText());
-                textField.clear();
-                textField.requestFocus();
+                if (!socket.isClosed()) {
+                    out.writeUTF(textField.getText());
+                    textField.clear();
+                    textField.requestFocus();
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    private void sendMessage(String text) {
+        try {
+            if (!socket.isClosed()) {
+                out.writeUTF(text);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -99,6 +113,15 @@ public class Controller implements Initializable {
         }
     }
 
+    private Optional<ButtonType> askForExit() {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Выход");
+        alert.setHeaderText(null);
+        alert.setContentText("Действительно выйти из программы?");
+
+        return alert.showAndWait();
+    }
+
     public void clearText() {
         textField.clear();
     }
@@ -108,7 +131,10 @@ public class Controller implements Initializable {
     }
 
     public void exit() {
-        System.exit(0);
+        if (askForExit().get() == ButtonType.OK) {
+            sendMessage("/disconnect");
+            System.exit(0);
+        }
     }
 
     public void setDefaultTheme() {

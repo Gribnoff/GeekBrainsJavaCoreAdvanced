@@ -14,6 +14,15 @@ public class Main extends Application {
         root.setId("root");
         primaryStage.setTitle("GeekChat");
         Scene scene = new Scene(root, 400, 400);
+        /*
+
+        FXMLLoader loader = new FXMLLoader();
+        Controller controller = loader.getController();
+        primaryStage.setOnCloseRequest(event -> {
+            controller.exit();
+        });
+
+        */
         primaryStage.setScene(scene);
         primaryStage.show();
     }
