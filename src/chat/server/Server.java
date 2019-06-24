@@ -16,7 +16,7 @@ class Server {
             server = new ServerSocket(8189);
             System.out.println("Сервер запущен");
 
-            while (!server.isClosed()) {
+            while (true) {
                 socket = server.accept();
                 System.out.println("user #" + ClientHandler.online + " подключился");
                 subsribe(new ClientHandler(socket, this, "user #" + ClientHandler.online));
