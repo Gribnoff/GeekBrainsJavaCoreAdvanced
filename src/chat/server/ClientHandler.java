@@ -7,16 +7,31 @@ import java.net.Socket;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 class ClientHandler {
     private Socket socket;
     private DataInputStream in;
     private DataOutputStream out;
     private Server server;
+    String name;
+    static int online;
 
-    ClientHandler(Socket socket, Server server) {
+    private static SortedSet<String> commands = new TreeSet<>();
+    static {
+        commands.add("/disconnect");
+    }
+
+    public Socket getSocket() {
+        return socket;
+    }
+
+    ClientHandler(Socket socket, Server server, String name) {
         this.socket = socket;
         this.server = server;
+        this.name = name;
+        online++;
         try {
             this.in = new DataInputStream(socket.getInputStream());
             this.out = new DataOutputStream(socket.getOutputStream());
@@ -27,36 +42,34 @@ class ClientHandler {
                     try {
                         while (true) {
                             String str = in.readUTF();
-                            if ("/end".equals(str))
+                            if ("/disconnect".equals(str)) {
+                                disconnect();
                                 break;
+                            } else if (str.startsWith("/")) {
+                                noSuchCommandMessage();
+                                continue;
+                            }
 
                             Date date = new Date();
                             DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 
-                            str = dateFormat.format(date) + " Me: " + str;
+                            str = dateFormat.format(date) + " " + name + ": " + str;
                             server.broadcastMessage(str);
 
-                            System.out.println("Client " + str);
+                            System.out.println(str);
                         }
                     }catch (IOException e) {
                         e.printStackTrace();
                     } finally {
                         try {
                             in.close();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        try {
                             out.close();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        try {
                             socket.close();
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
                     }
+                    server.unsubsсribe(ClientHandler.this);
                 }
             }).start();
 
@@ -70,6 +83,20 @@ class ClientHandler {
             out.writeUTF(text);
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    private void disconnect() {
+        sendMessage("/disconnectionAccepted");
+        online--;
+        server.broadcastMessage(name + " покинул здание!");
+        System.out.println(name + " покинул здание!");
+    }
+
+    private void noSuchCommandMessage() {
+        sendMessage("Такой комманды нет. Список доступных комманд:");
+        for (String command : commands) {
+            sendMessage(command);
         }
     }
 }
