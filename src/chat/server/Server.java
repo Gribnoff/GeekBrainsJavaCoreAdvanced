@@ -19,7 +19,7 @@ class Server {
             while (true) {
                 socket = server.accept();
                 System.out.println("user #" + ClientHandler.online + " подключился");
-                subsribe(new ClientHandler(socket, this, "user #" + ClientHandler.online));
+                subsсribe(new ClientHandler(socket, this, "user #" + ClientHandler.online));
             }
 
 
@@ -42,11 +42,11 @@ class Server {
         }
     }
 
-    void subsribe(ClientHandler client) {
+    void subsсribe(ClientHandler client) {
         clients.add(client);
     }
 
-    void unsubsribe(ClientHandler client) {
+    void unsubsсribe(ClientHandler client) {
         clients.remove(client);
     }
 }

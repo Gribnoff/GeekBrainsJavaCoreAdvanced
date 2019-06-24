@@ -69,7 +69,7 @@ class ClientHandler {
                             e.printStackTrace();
                         }
                     }
-                    server.unsubsribe(ClientHandler.this);
+                    server.unsubsсribe(ClientHandler.this);
                 }
             }).start();
 
