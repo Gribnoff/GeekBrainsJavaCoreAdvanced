@@ -1,4 +1,4 @@
-package chat.client.sample;
+package chat.client;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -13,7 +13,7 @@ public class Main extends Application {
         Parent root = FXMLLoader.load(getClass().getResource("appearance.fxml"));
         root.setId("root");
         primaryStage.setTitle("GeekChat");
-        Scene scene = new Scene(root, 400, 400);
+        Scene scene = new Scene(root);
         /*
 
         FXMLLoader loader = new FXMLLoader();

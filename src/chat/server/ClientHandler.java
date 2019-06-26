@@ -15,22 +15,29 @@ class ClientHandler {
     private DataInputStream in;
     private DataOutputStream out;
     private Server server;
-    String name;
-    static int online;
+    private String nickname;
+    private static int online;
 
-    private static SortedSet<String> commands = new TreeSet<>();
+    private static SortedSet<String> userCommands = new TreeSet<>();
     static {
-        commands.add("/disconnect");
+        userCommands.add("/disconnect");
+    }
+
+    public String getNickname() {
+        return nickname;
+    }
+
+    public static int getOnline() {
+        return online;
     }
 
     public Socket getSocket() {
         return socket;
     }
 
-    ClientHandler(Socket socket, Server server, String name) {
+    ClientHandler(Socket socket, Server server) {
         this.socket = socket;
         this.server = server;
-        this.name = name;
         online++;
         try {
             this.in = new DataInputStream(socket.getInputStream());
@@ -40,6 +47,21 @@ class ClientHandler {
                 @Override
                 public void run() {
                     try {
+                        while (true) {
+                            String str = in.readUTF();
+                            if (str.startsWith("/auth")) {
+                                String[] tokens = str.split(" ");
+                                String nick = AuthService.getNickByLoginAndPass(tokens[1], tokens[2]);
+                                if (nick != null) {
+                                    sendMessage("/authPassed");
+                                    nickname = nick;
+                                    server.subsсribe(ClientHandler.this);
+                                    break;
+                                } else
+                                    sendMessage("/authFailed");
+                            }
+                        }
+
                         while (true) {
                             String str = in.readUTF();
                             if ("/disconnect".equals(str)) {
@@ -53,7 +75,7 @@ class ClientHandler {
                             Date date = new Date();
                             DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 
-                            str = dateFormat.format(date) + " " + name + ": " + str;
+                            str = dateFormat.format(date) + " " + nickname + ": " + str;
                             server.broadcastMessage(str);
 
                             System.out.println(str);
@@ -89,13 +111,13 @@ class ClientHandler {
     private void disconnect() {
         sendMessage("/disconnectionAccepted");
         online--;
-        server.broadcastMessage(name + " покинул здание!");
-        System.out.println(name + " покинул здание!");
+        server.broadcastMessage(nickname + " покинул здание!");
+        System.out.println(nickname + " покинул здание!");
     }
 
     private void noSuchCommandMessage() {
         sendMessage("Такой комманды нет. Список доступных комманд:");
-        for (String command : commands) {
+        for (String command : userCommands) {
             sendMessage(command);
         }
     }

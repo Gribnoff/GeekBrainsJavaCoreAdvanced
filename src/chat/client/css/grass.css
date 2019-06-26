@@ -1,5 +1,4 @@
 /*Grass color scheme*/
-
 #menubar {
     -fx-background-color: #055401;
 }
@@ -12,13 +11,34 @@
     -fx-text-fill : #000000;
 }
 
+#loginPane {
+    -fx-background-image: url("../img/grass-back.jpg");
+}
+
+.label {
+    -fx-text-fill: #101ade;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+}
+
+#loginError {
+    -fx-text-fill: #ff0000;
+    -fx-font-size: 17px;
+}
+
+.text-field {
+    -fx-background-color: #59de52;
+    -fx-text-fill: #000000;
+    -fx-font-size: 14px;
+}
+
 #textArea .content {
     -fx-background-image: url("../img/grass-back.jpg") repeat-y center top;
 }
 
 #textArea{
     -fx-background-color: #003600;
-    -fx-text-fill: #ffffff;
+    -fx-text-fill: #101ade;
     -fx-font-weight: bold;
     -fx-font-size: 14px;
 }
@@ -39,6 +59,5 @@
 }
 
 #textField {
-    -fx-background-color: #59de52;
-    -fx-text-fill: #000000;
+    -fx-font-size: 12px;
 }

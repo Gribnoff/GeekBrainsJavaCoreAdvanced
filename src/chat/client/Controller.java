@@ -1,30 +1,54 @@
-package chat.client.sample;
+package chat.client;
 
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
-import java.net.URL;
 import java.util.Optional;
-import java.util.ResourceBundle;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class Controller implements Initializable {
+public class Controller {
 
     @FXML
     VBox window;
     @FXML
     TextArea textArea;
     @FXML
-    TextField textField;
+    TextField textField, loginField, passField;
     @FXML
     Button buttonSend, buttonClear, buttonSearch;
+    @FXML
+    Pane loginPane, chatPane;
+    @FXML
+    MenuItem clearChat;
+    @FXML
+    Label loginError;
+
+    private boolean authorized;
+
+    public void setAuthorized(boolean authorized) {
+        this.authorized = authorized;
+        if (authorized) {
+            loginPane.setVisible(false);
+            loginPane.setManaged(false);
+            loginError.setVisible(false);
+            chatPane.setManaged(true);
+            chatPane.setVisible(true);
+            clearChat.setDisable(false);
+        } else {
+            loginPane.setVisible(true);
+            loginPane.setManaged(true);
+            chatPane.setManaged(false);
+            chatPane.setVisible(false);
+            clearChat.setDisable(true);
+        }
+    }
 
     private Socket socket;
     private DataInputStream in;
@@ -33,8 +57,7 @@ public class Controller implements Initializable {
     private final String IP_ADDRESS = "localhost";
     private final int PORT = 8189;
 
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
+    public void connect() {
         try {
             socket = new Socket(IP_ADDRESS, PORT);
 
@@ -47,10 +70,20 @@ public class Controller implements Initializable {
                     try {
                         while (true) {
                             String str = in.readUTF();
+                            if ("/authPassed".equals(str)) {
+                                setAuthorized(true);
+                                break;
+                            } else
+                                loginError.setVisible(true);
+                        }
+
+                        while (true) {
+                            String str = in.readUTF();
                             if ("/disconnectionAccepted".equals(str))
                                 break;
                             textArea.appendText(str + "\n");
                         }
+
                     } catch (IOException e) {
                         e.printStackTrace();
                     } finally {
@@ -61,6 +94,8 @@ public class Controller implements Initializable {
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
+
+                        setAuthorized(false);
                     }
                 }
             }).start();
@@ -137,6 +172,10 @@ public class Controller implements Initializable {
         }
     }
 
+    public void close() {
+        System.exit(0);
+    }
+
     public void setDefaultTheme() {
         window.getStylesheets().clear();
     }
@@ -154,5 +193,19 @@ public class Controller implements Initializable {
     public void setDarculaTheme() {
         window.getStylesheets().clear();
         window.getStylesheets().add("chat/client/css/darcula.css");
+    }
+
+    public void login() {
+        if (socket == null || socket.isClosed())
+            connect();
+
+        try {
+            out.writeUTF("/auth " + loginField.getText() + " " + passField.getText());
+            loginField.clear();
+            passField.clear();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 }

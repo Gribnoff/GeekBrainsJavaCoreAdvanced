@@ -11,13 +11,34 @@
     -fx-text-fill : #000000;
 }
 
+#loginPane {
+    -fx-background-image: url("../img/sea-back.jpg");
+}
+
+.label {
+    -fx-text-fill: #d613d0;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+}
+
+#loginError {
+    -fx-text-fill: #ff0000;
+    -fx-font-size: 17px;
+}
+
+.text-field {
+    -fx-background-color: #1c938f;
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 14px;
+}
+
 #textArea .content {
     -fx-background-image: url("../img/sea-back.jpg") repeat-y center top;
 }
 
 #textArea{
-     -fx-background-color: #1d0e15;
-    -fx-text-fill: #ffffff;
+    -fx-background-color: #1d0e15;
+    -fx-text-fill: #d613d0;
     -fx-font-weight: bold;
     -fx-font-size: 14px;
 }
@@ -43,6 +64,5 @@
 }
 
 #textField {
-    -fx-background-color: #1c938f;
-    -fx-text-fill: #000000;
+    -fx-font-size: 12px;
 }

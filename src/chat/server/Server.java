@@ -13,25 +13,25 @@ class Server {
         Socket socket = null;
 
         try {
+            AuthService.connect();
+
             server = new ServerSocket(8189);
-            System.out.println("Сервер запущен");
+            System.out.println("Server started");
 
             while (true) {
                 socket = server.accept();
-                System.out.println("user #" + ClientHandler.online + " подключился");
-                subsсribe(new ClientHandler(socket, this, "user #" + ClientHandler.online));
+                new ClientHandler(socket, this);
             }
-
-
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
             try {
                 socket.close();
+                server.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
+            AuthService.disconect();
         }
     }
 
@@ -44,9 +44,13 @@ class Server {
 
     void subsсribe(ClientHandler client) {
         clients.add(client);
+        broadcastMessage(client.getNickname() + " ворвался в чат!");
+        System.out.println(client.getNickname() + " joined the channel");
     }
 
     void unsubsсribe(ClientHandler client) {
         clients.remove(client);
+        broadcastMessage(client.getNickname() + " заскучал и ушёл...");
+        System.out.println(client.getNickname() + " has left the channel");
     }
 }

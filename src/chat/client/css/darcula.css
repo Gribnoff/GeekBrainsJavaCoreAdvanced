@@ -1,4 +1,4 @@
-/*Grass color scheme*/
+/*Darcula color scheme*/
 #menubar {
     -fx-background-color: #1d0e15;
 }
@@ -9,6 +9,27 @@
 
 .menu-item .label {
     -fx-text-fill : #000000;
+}
+
+#loginPane {
+    -fx-background-image: url("../img/darcula-back.jpg");
+}
+
+.label {
+    -fx-text-fill: #d1891d;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+}
+
+#loginError {
+    -fx-text-fill: #ff0000;
+    -fx-font-size: 17px;
+}
+
+.text-field {
+    -fx-background-color: #3b2235;
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 14px;
 }
 
 #textArea .content {
@@ -47,6 +68,5 @@
 }
 
 #textField {
-    -fx-background-color: #3b2235;
-    -fx-text-fill: #ffffff;
+    -fx-font-size: 12px;
 }
