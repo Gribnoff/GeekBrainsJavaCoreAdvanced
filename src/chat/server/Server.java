@@ -7,6 +7,11 @@ import java.util.Vector;
 
 class Server {
     private Vector<ClientHandler> clients;
+
+    public Vector<ClientHandler> getClients() {
+        return clients;
+    }
+
     Server() {
         clients = new Vector<>();
         ServerSocket server = null;

@@ -64,16 +64,31 @@ class ClientHandler {
 
                         while (true) {
                             String str = in.readUTF();
+
+                            Date date = new Date();
+                            DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
+
                             if ("/disconnect".equals(str)) {
                                 disconnect();
                                 break;
+                            } else if (str.startsWith("/w ") || str.startsWith("/whisper ")) {
+                                boolean clientFound = false;
+                                String[] whisper = str.split(" ");
+                                for (ClientHandler client : server.getClients()) {
+                                    if (client.nickname.equals(whisper[1])) {
+                                        clientFound = true;
+                                        str = str.substring(whisper[0].length() + whisper[1].length());
+                                        out.writeUTF(dateFormat.format(date) + " " + "Whisper to " + nickname + ": " + str);
+                                        client.sendMessage(dateFormat.format(date) + " " + "Whisper from " + nickname + ": " + str);
+                                    }
+                                }
+                                if (!clientFound)
+                                    out.writeUTF("Пользователя с ником " + whisper[1] + " не найдено(либо он оффлайн)");
+                                continue;
                             } else if (str.startsWith("/")) {
                                 noSuchCommandMessage();
                                 continue;
                             }
-
-                            Date date = new Date();
-                            DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 
                             str = dateFormat.format(date) + " " + nickname + ": " + str;
                             server.broadcastMessage(str);
