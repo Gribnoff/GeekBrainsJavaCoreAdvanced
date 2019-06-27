@@ -32,7 +32,12 @@ public class Controller {
 
     private boolean authorized;
 
-    public void setAuthorized(boolean authorized) {
+    /**
+     * установка статуса авторизации пользователя и изменение интерфеса в зависимости от статуса
+     *
+     * @param authorized статус авторизации
+     */
+    private void setAuthorized(boolean authorized) {
         this.authorized = authorized;
         if (authorized) {
             loginPane.setVisible(false);
@@ -57,7 +62,10 @@ public class Controller {
     private final String IP_ADDRESS = "localhost";
     private final int PORT = 8189;
 
-    public void connect() {
+    /**
+     * взаимодействие пользователя с чатом и другими пользователями
+     */
+    private void connect() {
         try {
             socket = new Socket(IP_ADDRESS, PORT);
 
@@ -105,6 +113,9 @@ public class Controller {
         }
     }
 
+    /**
+     * отправка сообщения из textField на сервер
+     */
     public void sendMessage() {
         if (!textField.getText().isEmpty() && textField.getText() != null) {
             try {
@@ -119,6 +130,11 @@ public class Controller {
         }
     }
 
+    /**
+     * отправка сообщения на сервер
+     *
+     * @param text сообщение для отправки
+     */
     private void sendMessage(String text) {
         try {
             if (!socket.isClosed()) {
@@ -129,6 +145,9 @@ public class Controller {
         }
     }
 
+    /**
+     * поиск в чате фразу из textField
+     */
     public void searchPhrase() {
         if (!textField.getText().isEmpty() && textField.getText() != null) {
             int index = textArea.getText().indexOf(textField.getText());
@@ -148,6 +167,10 @@ public class Controller {
         }
     }
 
+    /**
+     * окно подтвержения выхода из программы
+     * @return кнопку которую нажал пользователь(OK или Cancel)
+     */
     private Optional<ButtonType> askForExit() {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Выход");
@@ -157,14 +180,23 @@ public class Controller {
         return alert.showAndWait();
     }
 
+    /**
+     * очистка textField
+     */
     public void clearText() {
         textField.clear();
     }
 
+    /**
+     * очистка чата
+     */
     public void clearChat() {
         textArea.clear();
     }
 
+    /**
+     * выход из программы после авторизации
+     */
     public void exit() {
         if (askForExit().get() == ButtonType.OK) {
             sendMessage("/disconnect");
@@ -172,8 +204,28 @@ public class Controller {
         }
     }
 
+    /**
+     * закрытие программы
+     */
     public void close() {
         System.exit(0);
+    }
+
+    /**
+     * попытка авторизации
+     */
+    public void login() {
+        if (socket == null || socket.isClosed())
+            connect();
+
+        try {
+            out.writeUTF("/auth " + loginField.getText() + " " + passField.getText());
+            loginField.clear();
+            passField.clear();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
     public void setDefaultTheme() {
@@ -193,19 +245,5 @@ public class Controller {
     public void setDarculaTheme() {
         window.getStylesheets().clear();
         window.getStylesheets().add("chat/client/css/darcula.css");
-    }
-
-    public void login() {
-        if (socket == null || socket.isClosed())
-            connect();
-
-        try {
-            out.writeUTF("/auth " + loginField.getText() + " " + passField.getText());
-            loginField.clear();
-            passField.clear();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
     }
 }
