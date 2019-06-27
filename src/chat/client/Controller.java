@@ -28,7 +28,7 @@ public class Controller {
     @FXML
     MenuItem clearChat;
     @FXML
-    Label loginError;
+    Label loginError, loginOverlap;
 
     private boolean authorized;
 
@@ -73,8 +73,13 @@ public class Controller {
                             if ("/authPassed".equals(str)) {
                                 setAuthorized(true);
                                 break;
-                            } else
+                            } else if ("/authFailed".equals(str)) {
+                                loginOverlap.setVisible(false);
                                 loginError.setVisible(true);
+                            } else if ("/authOverlap".equals(str)) {
+                                loginError.setVisible(false);
+                                loginOverlap.setVisible(true);
+                            }
                         }
 
                         while (true) {
@@ -201,7 +206,6 @@ public class Controller {
 
         try {
             out.writeUTF("/auth " + loginField.getText() + " " + passField.getText());
-            loginField.clear();
             passField.clear();
         } catch (IOException e) {
             e.printStackTrace();

@@ -52,13 +52,16 @@ class ClientHandler {
                             if (str.startsWith("/auth")) {
                                 String[] tokens = str.split(" ");
                                 String nick = AuthService.getNickByLoginAndPass(tokens[1], tokens[2]);
-                                if (nick != null) {
+                                if (nick == null)
+                                    sendMessage("/authFailed");
+                                else if (server.getClients().contains(getClientByNick(nick)))
+                                    sendMessage("/authOverlap");
+                                else {
                                     sendMessage("/authPassed");
                                     nickname = nick;
                                     server.subsсribe(ClientHandler.this);
                                     break;
-                                } else
-                                    sendMessage("/authFailed");
+                                }
                             }
                         }
 
@@ -159,5 +162,21 @@ class ClientHandler {
         }
 
         return result;
+    }
+
+
+    /**
+     * поиск клиента по нику для авторизации
+     *
+     * @param nick ник ползователя при авторизации
+     * @return целевого клиента - если найден, null - если не найден
+     */
+    private ClientHandler getClientByNick(String nick) {
+        ClientHandler target = null;
+        for (ClientHandler client : server.getClients()) {
+            if (client.nickname.equals(nick))
+                target = client;
+        }
+        return target;
     }
 }
