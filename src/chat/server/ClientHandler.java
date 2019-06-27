@@ -23,7 +23,7 @@ class ClientHandler {
         userCommands.add("/disconnect");
     }
 
-    public String getNickname() {
+    String getNickname() {
         return nickname;
     }
 
@@ -31,7 +31,7 @@ class ClientHandler {
         return online;
     }
 
-    public Socket getSocket() {
+    Socket getSocket() {
         return socket;
     }
 
@@ -59,7 +59,7 @@ class ClientHandler {
                                 else {
                                     sendMessage("/authPassed");
                                     nickname = nick;
-                                    server.subsсribe(ClientHandler.this);
+                                    server.subscribe(ClientHandler.this);
                                     break;
                                 }
                             }
@@ -109,7 +109,7 @@ class ClientHandler {
                             e.printStackTrace();
                         }
                     }
-                    server.unsubsсribe(ClientHandler.this);
+                    server.unsubscribe(ClientHandler.this);
                 }
             }).start();
 
@@ -118,6 +118,9 @@ class ClientHandler {
         }
     }
 
+    /**
+     * отправка сообщения пользователю
+     */
     void sendMessage(String text) {
         try {
             out.writeUTF(text);
@@ -126,11 +129,17 @@ class ClientHandler {
         }
     }
 
+    /**
+     * отключение от чата
+     */
     private void disconnect() {
         sendMessage("/disconnectionAccepted");
         online--;
     }
 
+    /**
+     * выводит список доступных комманд
+     */
     private void noSuchCommandMessage() {
         sendMessage("Такой комманды нет. Список доступных комманд:");
         for (String command : userCommands) {
