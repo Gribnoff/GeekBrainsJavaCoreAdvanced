@@ -72,19 +72,19 @@ class ClientHandler {
                                 disconnect();
                                 break;
                             } else if (str.startsWith("/w ") || str.startsWith("/whisper ")) {
-                                boolean clientFound = false;
                                 String[] whisper = str.split(" ");
-                                for (ClientHandler client : server.getClients()) {
-                                    if (client.nickname.equals(whisper[1])) {
-                                        clientFound = true;
-                                        str = str.substring(whisper[0].length() + whisper[1].length());
-                                        out.writeUTF(dateFormat.format(date) + " " + "Whisper to " + nickname + ": " + str);
-                                        client.sendMessage(dateFormat.format(date) + " " + "Whisper from " + nickname + ": " + str);
-                                    }
+                                ClientHandler target = getClientForWhisper(whisper);
+
+                                if (target == null)
+                                    out.writeUTF("Пользователь не найден(либо он оффлайн)");
+                                else {
+                                    str = str.substring(whisper[0].length() + whisper[1].length() + 2);
+                                    out.writeUTF(dateFormat.format(date) + " " + "Whisper to " + target.nickname + ": " + str);
+                                    target.sendMessage(dateFormat.format(date) + " " + "Whisper from " + nickname + ": " + str);
                                 }
-                                if (!clientFound)
-                                    out.writeUTF("Пользователя с ником " + whisper[1] + " не найдено(либо он оффлайн)");
+
                                 continue;
+
                             } else if (str.startsWith("/")) {
                                 noSuchCommandMessage();
                                 continue;
@@ -133,5 +133,31 @@ class ClientHandler {
         for (String command : userCommands) {
             sendMessage(command);
         }
+    }
+
+    /**
+     * поиск клиента по нику (для отправки личного сообщения)
+     *
+     * @param msg полная строка сообщения из textField
+     * @return целевого клиента - если найден, null - если не найден
+     */
+    private ClientHandler getClientForWhisper(String[] msg) {
+        ClientHandler result = null;
+
+        for (ClientHandler client : server.getClients()) {
+            boolean clientFound = true;
+            String[] clientNickSplit = client.nickname.split(" ");
+
+            for (int i = 0; i < clientNickSplit.length; i++) {
+                if (!msg[i + 1].equals(clientNickSplit[i])) {
+                    clientFound = false;
+                    break;
+                }
+            }
+            if (clientFound)
+                result = client;
+        }
+
+        return result;
     }
 }
