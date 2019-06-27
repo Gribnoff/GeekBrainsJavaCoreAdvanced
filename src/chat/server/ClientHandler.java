@@ -111,8 +111,6 @@ class ClientHandler {
     private void disconnect() {
         sendMessage("/disconnectionAccepted");
         online--;
-        server.broadcastMessage(nickname + " покинул здание!");
-        System.out.println(nickname + " покинул здание!");
     }
 
     private void noSuchCommandMessage() {
