@@ -23,7 +23,7 @@ class ClientHandler {
         userCommands.add("/disconnect");
     }
 
-    public String getNickname() {
+    String getNickname() {
         return nickname;
     }
 
@@ -31,7 +31,7 @@ class ClientHandler {
         return online;
     }
 
-    public Socket getSocket() {
+    Socket getSocket() {
         return socket;
     }
 
@@ -52,28 +52,46 @@ class ClientHandler {
                             if (str.startsWith("/auth")) {
                                 String[] tokens = str.split(" ");
                                 String nick = AuthService.getNickByLoginAndPass(tokens[1], tokens[2]);
-                                if (nick != null) {
+                                if (nick == null)
+                                    sendMessage("/authFailed");
+                                else if (server.getClients().contains(getClientByNick(nick)))
+                                    sendMessage("/authOverlap");
+                                else {
                                     sendMessage("/authPassed");
                                     nickname = nick;
-                                    server.subsсribe(ClientHandler.this);
+                                    server.subscribe(ClientHandler.this);
                                     break;
-                                } else
-                                    sendMessage("/authFailed");
+                                }
                             }
                         }
 
                         while (true) {
                             String str = in.readUTF();
+
+                            Date date = new Date();
+                            DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
+
                             if ("/disconnect".equals(str)) {
                                 disconnect();
                                 break;
+                            } else if (str.startsWith("/w ") || str.startsWith("/whisper ")) {
+                                String[] whisper = str.split(" ");
+                                ClientHandler target = getClientForWhisper(whisper);
+
+                                if (target == null)
+                                    out.writeUTF("Пользователь не найден(либо он оффлайн)");
+                                else {
+                                    str = str.substring(whisper[0].length() + whisper[1].length() + 2);
+                                    out.writeUTF(dateFormat.format(date) + " " + "Whisper to " + target.nickname + ": " + str);
+                                    target.sendMessage(dateFormat.format(date) + " " + "Whisper from " + nickname + ": " + str);
+                                }
+
+                                continue;
+
                             } else if (str.startsWith("/")) {
                                 noSuchCommandMessage();
                                 continue;
                             }
-
-                            Date date = new Date();
-                            DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 
                             str = dateFormat.format(date) + " " + nickname + ": " + str;
                             server.broadcastMessage(str);
@@ -91,7 +109,7 @@ class ClientHandler {
                             e.printStackTrace();
                         }
                     }
-                    server.unsubsсribe(ClientHandler.this);
+                    server.unsubscribe(ClientHandler.this);
                 }
             }).start();
 
@@ -100,6 +118,9 @@ class ClientHandler {
         }
     }
 
+    /**
+     * отправка сообщения пользователю
+     */
     void sendMessage(String text) {
         try {
             out.writeUTF(text);
@@ -108,15 +129,63 @@ class ClientHandler {
         }
     }
 
+    /**
+     * отключение от чата
+     */
     private void disconnect() {
         sendMessage("/disconnectionAccepted");
         online--;
     }
 
+    /**
+     * выводит список доступных комманд
+     */
     private void noSuchCommandMessage() {
         sendMessage("Такой комманды нет. Список доступных комманд:");
         for (String command : userCommands) {
             sendMessage(command);
         }
+    }
+
+    /**
+     * поиск клиента по нику (для отправки личного сообщения)
+     *
+     * @param msg полная строка сообщения из textField
+     * @return целевого клиента - если найден, null - если не найден
+     */
+    private ClientHandler getClientForWhisper(String[] msg) {
+        ClientHandler result = null;
+
+        for (ClientHandler client : server.getClients()) {
+            boolean clientFound = true;
+            String[] clientNickSplit = client.nickname.split(" ");
+
+            for (int i = 0; i < clientNickSplit.length; i++) {
+                if (!msg[i + 1].equals(clientNickSplit[i])) {
+                    clientFound = false;
+                    break;
+                }
+            }
+            if (clientFound)
+                result = client;
+        }
+
+        return result;
+    }
+
+
+    /**
+     * поиск клиента по нику для авторизации
+     *
+     * @param nick ник ползователя при авторизации
+     * @return целевого клиента - если найден, null - если не найден
+     */
+    private ClientHandler getClientByNick(String nick) {
+        ClientHandler target = null;
+        for (ClientHandler client : server.getClients()) {
+            if (client.nickname.equals(nick))
+                target = client;
+        }
+        return target;
     }
 }

@@ -21,7 +21,7 @@
     -fx-font-size: 14px;
 }
 
-#loginError {
+.loginErrorMsg {
     -fx-text-fill: #ff0000;
     -fx-font-size: 17px;
 }
