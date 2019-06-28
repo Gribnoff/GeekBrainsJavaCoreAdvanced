@@ -46,19 +46,29 @@ class Server {
      *
      * @param text пересылаемое сообщение
      */
-    void broadcastMessage(String text) {
+    void broadcastMessage(ClientHandler from, String text) throws IOException {
         for (ClientHandler client : clients) {
-            if (!client.getSocket().isClosed())
+            if (!client.checkBlackList(from.getNickname()))
                 client.sendMessage(text);
         }
     }
 
     /**
+     * рассылка серверных сообщений
+     *
+     * @param text сообщение
+     */
+    void broadcastMessage(String text) throws IOException {
+        for (ClientHandler client : clients) {
+            client.sendMessage(text);
+        }
+    }
+    /**
      * внесение пользователя в онлайн список при авторизации
      *
      * @param client пользователь
      */
-    void subscribe(ClientHandler client) {
+    void subscribe(ClientHandler client) throws IOException {
         clients.add(client);
         broadcastMessage(client.getNickname() + " ворвался в чат!");
         System.out.println(client.getNickname() + " joined the channel");
@@ -69,7 +79,7 @@ class Server {
      *
      * @param client пользователь
      */
-    void unsubscribe(ClientHandler client) {
+    void unsubscribe(ClientHandler client) throws IOException {
         clients.remove(client);
         broadcastMessage(client.getNickname() + " заскучал и ушёл...");
         System.out.println(client.getNickname() + " has left the channel");
