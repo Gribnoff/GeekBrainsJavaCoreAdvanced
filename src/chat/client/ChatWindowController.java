@@ -1,9 +1,11 @@
 package chat.client;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -13,109 +15,87 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class Controller {
+public class ChatWindowController {
 
     @FXML
     VBox window;
     @FXML
     TextArea textArea;
     @FXML
-    TextField textField, loginField, passField;
+    TextField textField;
     @FXML
     Button buttonSend, buttonClear, buttonSearch;
     @FXML
-    Pane loginPane, chatPane;
+    Pane chatPane;
     @FXML
     MenuItem clearChat;
-    @FXML
-    Label loginError, loginOverlap;
 
     private boolean authorized;
+    private static ChatWindow chatWindow;
+    private static LoginWindow loginWindow;
 
     /**
-     * установка статуса авторизации пользователя и изменение интерфеса в зависимости от статуса
-     *
-     * @param authorized статус авторизации
+     * синглтон окна чата
      */
-    private void setAuthorized(boolean authorized) {
-        this.authorized = authorized;
-        if (authorized) {
-            loginPane.setVisible(false);
-            loginPane.setManaged(false);
-            loginError.setVisible(false);
-            chatPane.setManaged(true);
-            chatPane.setVisible(true);
-            clearChat.setDisable(false);
-        } else {
-            loginPane.setVisible(true);
-            loginPane.setManaged(true);
-            chatPane.setManaged(false);
-            chatPane.setVisible(false);
-            clearChat.setDisable(true);
+    static ChatWindow getChatWindowInstance() {
+        if (chatWindow == null) {
+            try {
+                chatWindow = new ChatWindow();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
+
+        return chatWindow;
+    }
+
+    /**
+     * разлогин и изменение интерфейса
+     */
+    private void setUnauthorized() {
+        this.authorized = false;
+        setChatWindowVisible(false);
+        loginWindow.getController().setLoginWindowVisible(true);
     }
 
     private Socket socket;
     private DataInputStream in;
     private DataOutputStream out;
 
-    private final String IP_ADDRESS = "localhost";
-    private final int PORT = 8189;
-
     /**
      * взаимодействие пользователя с чатом и другими пользователями
      */
-    private void connect() {
-        try {
-            socket = new Socket(IP_ADDRESS, PORT);
+    void show(DataInputStream in, DataOutputStream out, Socket socket) {
+        this.socket = socket;
 
-            in = new DataInputStream(socket.getInputStream());
-            out = new DataOutputStream(socket.getOutputStream());
+        this.in = in;
+        this.out = out;
 
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        while (true) {
-                            String str = in.readUTF();
-                            if ("/authPassed".equals(str)) {
-                                setAuthorized(true);
-                                break;
-                            } else if ("/authFailed".equals(str)) {
-                                loginOverlap.setVisible(false);
-                                loginError.setVisible(true);
-                            } else if ("/authOverlap".equals(str)) {
-                                loginError.setVisible(false);
-                                loginOverlap.setVisible(true);
-                            }
-                        }
-
-                        while (true) {
-                            String str = in.readUTF();
-                            if ("/disconnectionAccepted".equals(str))
-                                break;
-                            textArea.appendText(str + "\n");
-                        }
-
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    } finally {
-                        try {
-                            out.close();
-                            in.close();
-                            socket.close();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-
-                        setAuthorized(false);
-                    }
+        new Thread(() -> {
+            try {
+                while (true) {
+                    String str = in.readUTF();
+                    if ("/disconnectionAccepted".equals(str))
+                        break;
+                    textArea.appendText(str + "\n");
                 }
-            }).start();
 
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    loginWindow = LoginWindowController.getLoginWindowInstance();
+                    out.close();
+                    in.close();
+                    socket.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                setUnauthorized();
+            }
+        }).start();
+
     }
 
     /**
@@ -200,37 +180,28 @@ public class Controller {
     }
 
     /**
-     * выход из программы после авторизации
+     * выход из программы
      */
     public void exit() {
         if (askForExit().get() == ButtonType.OK) {
             sendMessage("/disconnect");
+
             System.exit(0);
         }
     }
 
     /**
-     * закрытие программы
+     * скрывает или показывает окно с чатом
+     * @param visible true - показывает, false - скрывает
      */
-    public void close() {
-        System.exit(0);
-    }
-
-    /**
-     * попытка авторизации
-     */
-    public void login() {
-        if (socket == null || socket.isClosed())
-            connect();
-
-        try {
-            out.writeUTF("/auth " + loginField.getText() + " " + passField.getText());
-            loginField.clear();
-            passField.clear();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
+    void setChatWindowVisible(boolean visible) {
+        Platform.runLater(() -> {
+            Stage stage = (Stage) window.getScene().getWindow();
+            if (visible)
+                stage.show();
+            else
+                stage.hide();
+        });
     }
 
     public void setDefaultTheme() {
@@ -250,18 +221,5 @@ public class Controller {
     public void setDarculaTheme() {
         window.getStylesheets().clear();
         window.getStylesheets().add("chat/client/css/darcula.css");
-    }
-
-    public void login() {
-        if (socket == null || socket.isClosed())
-            connect();
-
-        try {
-            out.writeUTF("/auth " + loginField.getText() + " " + passField.getText());
-            passField.clear();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
     }
 }

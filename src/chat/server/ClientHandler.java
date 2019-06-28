@@ -43,74 +43,71 @@ class ClientHandler {
             this.in = new DataInputStream(socket.getInputStream());
             this.out = new DataOutputStream(socket.getOutputStream());
 
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        while (true) {
-                            String str = in.readUTF();
-                            if (str.startsWith("/auth")) {
-                                String[] tokens = str.split(" ");
-                                String nick = AuthService.getNickByLoginAndPass(tokens[1], tokens[2]);
-                                if (nick == null)
-                                    sendMessage("/authFailed");
-                                else if (server.getClients().contains(getClientByNick(nick)))
-                                    sendMessage("/authOverlap");
-                                else {
-                                    sendMessage("/authPassed");
-                                    nickname = nick;
-                                    server.subscribe(ClientHandler.this);
-                                    break;
-                                }
-                            }
-                        }
-
-                        while (true) {
-                            String str = in.readUTF();
-
-                            Date date = new Date();
-                            DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
-
-                            if ("/disconnect".equals(str)) {
-                                disconnect();
+            new Thread(() -> {
+                try {
+                    while (true) {
+                        String str = in.readUTF();
+                        if (str.startsWith("/auth")) {
+                            String[] tokens = str.split(" ");
+                            String nick = AuthService.getNickByLoginAndPass(tokens[1], tokens[2]);
+                            if (nick == null)
+                                sendMessage("/authFailed");
+                            else if (server.getClients().contains(getClientByNick(nick)))
+                                sendMessage("/authOverlap");
+                            else {
+                                sendMessage("/authPassed");
+                                nickname = nick;
+                                server.subscribe(ClientHandler.this);
                                 break;
-                            } else if (str.startsWith("/w ") || str.startsWith("/whisper ")) {
-                                String[] whisper = str.split(" ");
-                                ClientHandler target = getClientForWhisper(whisper);
-
-                                if (target == null)
-                                    out.writeUTF("Пользователь не найден(либо он оффлайн)");
-                                else {
-                                    str = str.substring(whisper[0].length() + whisper[1].length() + 2);
-                                    out.writeUTF(dateFormat.format(date) + " " + "Whisper to " + target.nickname + ": " + str);
-                                    target.sendMessage(dateFormat.format(date) + " " + "Whisper from " + nickname + ": " + str);
-                                }
-
-                                continue;
-
-                            } else if (str.startsWith("/")) {
-                                noSuchCommandMessage();
-                                continue;
                             }
-
-                            str = dateFormat.format(date) + " " + nickname + ": " + str;
-                            server.broadcastMessage(str);
-
-                            System.out.println(str);
-                        }
-                    }catch (IOException e) {
-                        e.printStackTrace();
-                    } finally {
-                        try {
-                            in.close();
-                            out.close();
-                            socket.close();
-                        } catch (IOException e) {
-                            e.printStackTrace();
                         }
                     }
-                    server.unsubscribe(ClientHandler.this);
+
+                    while (true) {
+                        String str = in.readUTF();
+
+                        Date date = new Date();
+                        DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
+
+                        if ("/disconnect".equals(str)) {
+                            disconnect();
+                            break;
+                        } else if (str.startsWith("/w ") || str.startsWith("/whisper ")) {
+                            String[] whisper = str.split(" ", 3);
+                            ClientHandler target = getClientByNick(whisper[1]);
+
+                            if (target == null)
+                                out.writeUTF("Пользователь не найден(либо он оффлайн)");
+                            else {
+                                str = whisper[2];
+                                out.writeUTF(dateFormat.format(date) + " " + "Whisper to " + target.nickname + ": " + str);
+                                target.sendMessage(dateFormat.format(date) + " " + "Whisper from " + nickname + ": " + str);
+                            }
+
+                            continue;
+
+                        } else if (str.startsWith("/")) {
+                            noSuchCommandMessage();
+                            continue;
+                        }
+
+                        str = dateFormat.format(date) + " " + nickname + ": " + str;
+                        server.broadcastMessage(str);
+
+                        System.out.println(str);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } finally {
+                    try {
+                        in.close();
+                        out.close();
+                        socket.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
+                server.unsubscribe(ClientHandler.this);
             }).start();
 
         } catch (IOException e) {
@@ -148,43 +145,18 @@ class ClientHandler {
     }
 
     /**
-     * поиск клиента по нику (для отправки личного сообщения)
-     *
-     * @param msg полная строка сообщения из textField
-     * @return целевого клиента - если найден, null - если не найден
-     */
-    private ClientHandler getClientForWhisper(String[] msg) {
-        ClientHandler result = null;
-
-        for (ClientHandler client : server.getClients()) {
-            boolean clientFound = true;
-            String[] clientNickSplit = client.nickname.split(" ");
-
-            for (int i = 0; i < clientNickSplit.length; i++) {
-                if (!msg[i + 1].equals(clientNickSplit[i])) {
-                    clientFound = false;
-                    break;
-                }
-            }
-            if (clientFound)
-                result = client;
-        }
-
-        return result;
-    }
-
-
-    /**
      * поиск клиента по нику для авторизации
      *
-     * @param nick ник ползователя при авторизации
+     * @param nick ник ползователя
      * @return целевого клиента - если найден, null - если не найден
      */
     private ClientHandler getClientByNick(String nick) {
         ClientHandler target = null;
         for (ClientHandler client : server.getClients()) {
-            if (client.nickname.equals(nick))
+            if (client.nickname.equals(nick)) {
                 target = client;
+                break;
+            }
         }
         return target;
     }

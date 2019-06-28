@@ -31,6 +31,7 @@ class Server {
             e.printStackTrace();
         } finally {
             try {
+                assert socket != null;
                 socket.close();
                 server.close();
             } catch (IOException e) {
