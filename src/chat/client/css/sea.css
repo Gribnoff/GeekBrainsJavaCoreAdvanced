@@ -20,6 +20,7 @@
     -fx-font-weight: bold;
     -fx-font-size: 14px;
 }
+#onlineLabel { -fx-background-color: linear-gradient(#307fb0 0%, #1d0e15 25%, #1d0e15 75%, #97e4d7 100%);}
 
 .loginErrorMsg {
     -fx-text-fill: #ff0000;
@@ -41,6 +42,19 @@
     -fx-text-fill: #d613d0;
     -fx-font-weight: bold;
     -fx-font-size: 14px;
+}
+
+#onlineList {
+    -fx-background-image: url("../img/sea-back.jpg") repeat-y center top;
+    -fx-background-color: #1d0e15;
+}
+
+.list-cell { -fx-text-fill: #d613d0;}
+.list-cell:odd { -fx-background-color: linear-gradient(#307fb0 0%, #1d0e15 25%, #1d0e15 75%, #97e4d7 100%);}
+.list-cell:even { -fx-background-color: linear-gradient(#97e4d7 0%, #1d0e15 25%, #1d0e15 75%, #307fb0 100%);}
+.list-cell:filled:selected:focused, .list-cell:filled:selected, .list-cell:filled:hover {
+    -fx-background-color: #97e4d7 40%;
+    -fx-text-fill: white;
 }
 
 .button {

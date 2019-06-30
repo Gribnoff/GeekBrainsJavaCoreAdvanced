@@ -29,6 +29,10 @@ public class ChatWindowController {
     Pane chatPane;
     @FXML
     MenuItem clearChat;
+    @FXML
+    ListView<String> onlineList;
+    @FXML
+    Label onlineLabel;
 
     private boolean authorized;
     private static ChatWindow chatWindow;
@@ -45,7 +49,6 @@ public class ChatWindowController {
                 e.printStackTrace();
             }
         }
-
         return chatWindow;
     }
 
@@ -77,6 +80,17 @@ public class ChatWindowController {
                     String str = in.readUTF();
                     if ("/disconnectionAccepted".equals(str))
                         break;
+                    if (str.startsWith("/online ")) {
+                        String[] online = str.split(" ");
+                        Platform.runLater(() -> {
+                            onlineLabel.setText("В данный момент онлайн(" + (online.length - 1) + "):");
+                            onlineList.getItems().clear();
+                            for (int i = 1; i < online.length; i++) {
+                                onlineList.getItems().add(online[i]);
+                            }
+                        });
+                        continue;
+                    }
                     textArea.appendText(str + "\n");
                 }
 

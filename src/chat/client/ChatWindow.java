@@ -22,7 +22,7 @@ class ChatWindow extends Window {
         Platform.runLater(() -> {
             Stage stage = new Stage();
             stage.setTitle("GeekChat");
-            Scene scene = new Scene(root, 400, 420);
+            Scene scene = new Scene(root, 600, 420);
             stage.setScene(scene);
             stage.show();
             stage.setOnCloseRequest(event -> controller.exit());

@@ -16,10 +16,11 @@
 }
 
 .label {
-    -fx-text-fill: #101ade;
+    -fx-text-fill: white;
     -fx-font-weight: bold;
     -fx-font-size: 14px;
 }
+#onlineLabel { -fx-background-color: linear-gradient(#002900 0%, #0d4312 25%, #3c8c37 75%, #80cb62 100%);}
 
 .loginErrorMsg {
     -fx-text-fill: #ff0000;
@@ -38,10 +39,24 @@
 
 #textArea{
     -fx-background-color: #003600;
-    -fx-text-fill: #101ade;
+    -fx-text-fill: white;
     -fx-font-weight: bold;
     -fx-font-size: 14px;
 }
+
+#onlineList {
+    -fx-background-image: url("../img/grass-back.jpg") repeat-y center top;
+    -fx-background-color: #003600;
+}
+
+.list-cell { -fx-text-fill: white;}
+.list-cell:odd { -fx-background-color: linear-gradient(#80cb62 0%, #3c8c37 25%, #0d4312 75%, #002900 100%);}
+.list-cell:even { -fx-background-color: linear-gradient(#002900 0%, #0d4312 25%, #3c8c37 75%, #80cb62 100%);}
+.list-cell:filled:selected:focused, .list-cell:filled:selected, .list-cell:filled:hover {
+    -fx-background-color: #0d4312 40%;
+    -fx-text-fill: white;
+}
+
 
 .button {
     -fx-background-color:

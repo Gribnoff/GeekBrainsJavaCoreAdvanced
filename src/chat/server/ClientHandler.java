@@ -14,7 +14,6 @@ class ClientHandler {
     private DataOutputStream out;
     private Server server;
     private String nickname;
-    private static int online;
     private List<String> blackList;
     private static DateFormat dateFormat;
 
@@ -31,10 +30,6 @@ class ClientHandler {
         return nickname;
     }
 
-    public static int getOnline() {
-        return online;
-    }
-
     Socket getSocket() {
         return socket;
     }
@@ -47,7 +42,6 @@ class ClientHandler {
         blackList = new ArrayList<>();
         this.socket = socket;
         this.server = server;
-        online++;
         dateFormat = new SimpleDateFormat("HH:mm:ss");
         try {
             this.in = new DataInputStream(socket.getInputStream());
@@ -156,7 +150,6 @@ class ClientHandler {
      */
     private void disconnect() throws IOException {
         sendMessage("/disconnectionAccepted");
-        online--;
     }
 
     /**

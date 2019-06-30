@@ -8,7 +8,7 @@ import java.util.Vector;
 class Server {
     private Vector<ClientHandler> clients;
 
-    public Vector<ClientHandler> getClients() {
+    Vector<ClientHandler> getClients() {
         return clients;
     }
 
@@ -58,7 +58,7 @@ class Server {
      *
      * @param text сообщение
      */
-    void broadcastMessage(String text) throws IOException {
+    private void broadcastMessage(String text) throws IOException {
         for (ClientHandler client : clients) {
             client.sendMessage(text);
         }
@@ -70,6 +70,7 @@ class Server {
      */
     void subscribe(ClientHandler client) throws IOException {
         clients.add(client);
+        distributeOnlineList();
         broadcastMessage(client.getNickname() + " ворвался в чат!");
         System.out.println(client.getNickname() + " joined the channel");
     }
@@ -81,7 +82,23 @@ class Server {
      */
     void unsubscribe(ClientHandler client) throws IOException {
         clients.remove(client);
+        distributeOnlineList();
         broadcastMessage(client.getNickname() + " заскучал и ушёл...");
         System.out.println(client.getNickname() + " has left the channel");
+    }
+
+    /**
+     * рассылка списка онлайн пользователей
+     */
+    private void distributeOnlineList() throws IOException {
+        StringBuilder sb = new StringBuilder();
+        sb.append("/online ");
+        for (ClientHandler client : clients) {
+            sb.append(client.getNickname() + " ");
+        }
+
+        String out = sb.toString();
+
+        broadcastMessage(out);
     }
 }

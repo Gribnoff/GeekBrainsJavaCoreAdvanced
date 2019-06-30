@@ -20,6 +20,7 @@
     -fx-font-weight: bold;
     -fx-font-size: 14px;
 }
+#onlineLabel { -fx-background-color: linear-gradient(#231014 0%, #3a2134 25%, #341c2a 75%, #543846 100%);}
 
 .loginErrorMsg {
     -fx-text-fill: #ff0000;
@@ -32,15 +33,25 @@
     -fx-font-size: 14px;
 }
 
-#textArea .content {
-    -fx-background-image: url("../img/darcula-back.jpg") repeat-y center top;
-}
-
-#textArea{
+#textArea .content { -fx-background-image: url("../img/darcula-back.jpg") repeat-y center top; }
+#textArea {
     -fx-background-color: #1d0e15;
     -fx-text-fill: #d1891d;
     -fx-font-weight: bold;
     -fx-font-size: 14px;
+}
+
+#onlineList {
+    -fx-background-image: url("../img/darcula-back.jpg") repeat-y center top;
+    -fx-background-color: #1d0e15;
+}
+
+.list-cell { -fx-text-fill: #d1891d;}
+.list-cell:odd { -fx-background-color: linear-gradient(#231014 0%, #3a2134 25%, #341c2a 75%, #543846 100%);}
+.list-cell:even { -fx-background-color: linear-gradient(#543846 0%, #341c2a 25%, #3a2134 75%, #231014 100%);}
+.list-cell:filled:selected:focused, .list-cell:filled:selected, .list-cell:filled:hover {
+    -fx-background-color: #450e3f 40%;
+    -fx-text-fill: white;
 }
 
 .button {
