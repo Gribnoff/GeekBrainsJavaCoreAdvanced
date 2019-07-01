@@ -37,7 +37,7 @@ class Server {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            AuthService.disconect();
+            AuthService.disconnect();
         }
     }
 

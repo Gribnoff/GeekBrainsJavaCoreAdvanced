@@ -22,7 +22,7 @@ class AuthService {
     /**
      * выключение сервиса авторизации
      */
-    static void disconect() {
+    static void disconnect() {
         try {
             connection.close();
         } catch (SQLException e) {

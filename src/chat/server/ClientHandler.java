@@ -61,7 +61,7 @@ class ClientHandler {
                             else {
                                 sendMessage("/authPassed");
                                 nickname = nick;
-                                server.subscribe(ClientHandler.this);
+                                server.subscribe(this);
                                 break;
                             }
                         }
@@ -100,7 +100,7 @@ class ClientHandler {
                         } else {
 
                             str = dateFormat.format(new Date()) + " " + nickname + ": " + str;
-                            server.broadcastMessage(ClientHandler.this, str);
+                            server.broadcastMessage(this, str);
 
                             System.out.println(str);
                         }
@@ -112,7 +112,7 @@ class ClientHandler {
                         in.close();
                         out.close();
                         socket.close();
-                        server.unsubscribe(ClientHandler.this);
+                        server.unsubscribe(this);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
